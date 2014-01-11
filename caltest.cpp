@@ -56,17 +56,17 @@ int main()
 	set_k_time( rawtime );
 	system("clear");
 	
-	/*
+	
 	new_test("Move event");
 	test_move_event();
-	new_test("Related event");*/
+	new_test("Related event");
 	test_related_event();
-/*	new_test("Reoccurring event");
+	new_test("Reoccurring event");
 	test_reoccurring_event();
 	new_test("Birthday");
 	test_add_birthday();
 	new_test("Output");
-	test_output();*/
+	test_output();
 }
 
 void test_output()
@@ -135,37 +135,21 @@ void test_related_event()
 	c.add_event("party", d1);
 	c.add_related_event(d1, -1, "party", "förfest");
 	
+	Gregorian d78(2012, 03, 25);
+	c.add_event("random", d78);
+	
 	streck(c);
 	
-/*	cout << "Moving da party 7 days forward in time\n";
-	Gregorian d2 = d1;
-	d2 += 7;
-	c.move_event(d1, d2, "party");
-	streck(c);
-	
-	cout << "Move da party 7 more days\n";
-	d1 += 14;
-	c.move_event(d2, d1, "party");
-	streck(c);
-	
-	cout << "Moving da förfest, then da party\n";
-	Gregorian d3 = d1;
-	d3 -= 1;
-	c.move_event(d3, d2, "förfest");
-	streck(c);
-	
-	c.move_event(d1, d2, "party");
-	streck(c);
-	*/
 	Gregorian d10(2012, 01, 15);
 	c.add_related_event(d10, -1, "förfest", "handla");
 	c.add_related_event(d10, 2, "förfest", "städa");
+	c.add_related_event(d10, 7, "förfest", "förfestens förfest");
 	streck(c);
 	
 	cout << "Förfesten var ju på tok för tidigt...\n";
 	Gregorian d11 = d10;
 	d11 += 3;
-	c.move_event(d10, d11, "förfest");
+	c.move_event(d1, d11, "party");
 	cout << "number of events: " << c.get_events().size() << endl;
 	streck(c);
 }

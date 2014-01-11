@@ -250,6 +250,7 @@ namespace lab2
 	template<typename T>
 	bool Calendar<T>::move_event(const Date & from, const Date & to, std::string event)
 	{
+		std::cout << "> move_event: " << event << std::endl;
 		int daystoadd = to - from;
 		
 		//check if movement will result in collision for main events
@@ -262,50 +263,62 @@ namespace lab2
 		if (!can_move_event(*event_to_move, daystoadd))
 				return false;
 		
+		std::cout << "går att flytta\n";
+		
 		//move this event and all it's children (recursively)
 		Event<T> * just_created = move_event(*event_to_move, daystoadd);
 		
+		std::cout << "slutfix...";
 		//notify the father of the change
 		if (just_created->parent != nullptr)
 			just_created->parent->rel_events.push_back(just_created);
-
+		std::cout << "klart.\n";
 		return true;	
 	}
 	
 	template<typename T>
 	Event<T> * Calendar<T>::move_event(Event<T> & event, int daystoadd)
 	{
-		std::cout << "move_event " << event;
+		std::cout << "   > move_event " << event;
 		//assuming that all events can be moved
 		
 		//create the new event and add it
 		T new_date = event.date;
 		new_date += daystoadd;
-		std::cout << "adding event... " << add_event(event.description, new_date) << std::endl;
-		//std::cout << *this;
+		add_event(event.description, new_date);
 		
 		//Find a pointer to the event just created
 		Event<T> * ev = find_event(new_date, event.description);
+		
+		std::cout << "created " << *ev;
 		
 		//give the new event a father
 		ev->parent = event.parent;
 		
 		//give the new event it's children
-		for (Event<T> * rel : event.rel_events) {
-			//move the related event the same number of days
-			std::cout << "\nMove event " << *rel << std::endl;
+		while (event.rel_events.size() > 0){
+			Event<T>* rel = event.rel_events[event.rel_events.size() - 1];
+			event.rel_events.pop_back();
+			
+//		for (Event<T> * rel : event.rel_events) {
+			//ändra förälder till nya eventet
 			rel->parent = ev;
-			ev->rel_events.push_back(move_event(*rel, daystoadd));
+			std::cout << "   > " << event.description << ": ";
+			Event<T> * ets = move_event(*rel, daystoadd);
+			std::cout << "ets: " << *ets << std::endl;
+			ev->rel_events.push_back(ets);
 		}
 		
+		
+		
+		std::cout << "removing " << event.description << "... ";
 		//remove the old event
 		remove_event(event.description, event.date.day(), event.date.month(), event.date.year());
 
-		// Om gamla eventet hade en pappa, måste nya eventet ha samma pappa
-		if (event.parent != nullptr)
-			ev->parent = event.parent;
+		std::cout << "done.\n";
 
-		std::cout << "move_event created new event " << *ev << ". Size of list: " << events.size() << std::endl;
+		std::cout << *ev;
+		
 		return ev;
 	}
 	
